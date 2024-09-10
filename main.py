@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 
+from llms.controller import LLMs as ControllerLLMs
 from baseclasses.bot import LLamaBot
 import settings
 
@@ -16,13 +17,16 @@ def run():
     async def on_ready():
         print(f'Logged in as {bot.user} (ID: {bot.user.id})')
 
+        controller_llm = ControllerLLMs(bot)
+        bot.controller_llm = controller_llm
+
         await bot.load_extension("llms.cog")
 
 
 
     @bot.event
     async def on_message(message: discord.Message):
-        await bot.process_message(message)
+        await bot.controller_llm.process_message(message)
 
         await bot.process_commands(message)
 

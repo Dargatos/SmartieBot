@@ -1,4 +1,8 @@
-Here u will find a simple Discord bot with <abbr title="'Large Language Model' or also know for Artificial itelligence">LLM</abbr> integration.
-Its still ver WIP but has some neat features.
-Anyway dont look to good at the code it's yeah not the most beautiful especially the part about the LLM.
-Also when u want to use the bot u need to install [Ollama](https://ollama.com/download) and until i add it the models but thats all very simple trust me.
+# My Discord Bot
+
+This is a simple Discord bot with <abbr title="'Large Language Model' or also know for Artificial itelligence">LLM</abbr> integration. It's still a work in progress but has some neat features.
+
+You need to nstall [Ollama](https://ollama.com/download) and atleast one model from Ollama. For that just tpye `ollama pull "llama3.1"` or any other model in your terminal
+
+
+Feel free to contribute or report issues!

@@ -8,9 +8,39 @@ class LLMs:
         self.Ollama = TextGenerator()
         self.bot = bot
         self.webhooks = {}
+        self.standardLLM : str = "llama"
+        self.currenLLM : str = self.standardLLM
+
+    async def changeLLM(self, newllm):
+        modellist = list(await self.Ollama.getList())
+        if newllm in modellist:
+            self.currenLLM = newllm
+            print(f"Change LLM to {newllm}")
 
     async def process_message(self, message: discord.Message):
-        
+
+
+        if isinstance(message.channel, discord.DMChannel):
+            if message.author == self.bot.user:
+                return
+            
+            print("Text From DM detected")
+            if message.content.startswith("LLm list"):
+                modellist = await self.Ollama.getList()
+                await message.reply(list(modellist))
+            elif message.content.startswith("set LLM"):
+                model = await self.ollamalistCheck(message)
+                if model == False: await message.channel.send("Model doesnt exist")
+                else:
+                    self.currenLLM = model
+                    print (f'Now Using {self.currenLLM} as LLM')
+            else:
+                usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
+                response = await self.Ollama.askllama(self.currenLLM, message.content,usercontx)
+                await message.channel.send(response)
+                
+            return
+
         if message.author.name == "zero_panda":
             await message.reply("Maul Lura")
 
@@ -31,6 +61,15 @@ class LLMs:
             target_channel_id = message.channel.id
             await self.send_message_with_webhook(message,target_channel_id, "Ich bin ein Pinguin Quack Quack", "Moritz", avatar_url)
 
+        
+
+        if "Smartie" in message.content:
+            usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
+            text = await self.Ollama.askllama(self.currenLLM,message.content,usercontx)
+            await message.reply(text)
+
+
+        #await self.OllamaCheck(message)
 
     async def fetch_user_avatar(self, user_id):
         try:
@@ -107,13 +146,22 @@ class LLMs:
 
             #await self.delete_webhook(message, channel_id)
 
+
+
+    # Checks if in the message was a LLM name and if sends a message if the corresponfings models ansewer
     async def OllamaCheck(self, message):
+        model = await self.ollamalistCheck(message)
+        if model:
+            text = await self.Ollama.askllama(model,message.content)
+            await message.reply(text)
+
+    async def ollamalistCheck(self, message):
         text = message.content
         s = text.split(" ")
-        words = list(self.llamas)
-        #print(words)
+        
+        modellist = list(await self.Ollama.getList())
         for i in s:
-            if (i in words):
+            if (i in modellist):
                 print("Recognized Model")
-                text = self.Ollama.generate_text(self.model,message.content)
-                await message.reply(text)
+                return i
+        return False

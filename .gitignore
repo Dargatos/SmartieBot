@@ -137,7 +137,7 @@ venv.bak/
 .data.json
 # mkdocs documentation
 /site
-
+llms/data.json
 # mypy
 .mypy_cache/
 .dmypy.json

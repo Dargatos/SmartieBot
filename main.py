@@ -55,7 +55,7 @@ def run():
 
     @discord.app_commands.command(name="be_nice_to_lura", description="Secret")
     async def be_nice(interaction: discord.Interaction):
-        await interaction.response.send_message(" toggled to stop Bully Lura")
+        await interaction.response.send_message("toggled to stop Bully Lura")
 
     bot.tree.add_command(be_nice)
     bot.tree.add_command(sync)

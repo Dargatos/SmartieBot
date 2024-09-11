@@ -35,28 +35,25 @@ class TextGenerator:
 
     async def getList(self):
         return (self.installedModels)
-        
+    
+    async def generateOllama(self,model,prompt, contx:str, ):
+
+        response = self.ollama.generate(model = model,prompt="Hi how are u",)
+        return response
 
 
     async def chatOllama(self,model,prompt, contx:str):
-        template = (
-            "You are a Discord bot named Smartie"
-        ).format(contx=contx, Message=prompt)
-        headers = {
-            "Content-Type": "application/json"
-        }
-
-        user = {"The Users name is Mio"}
         data = [
             {
                 'role': 'system',
-                'content': 'You are DiscordBot named Smartie.'
-                'Provide short answers.'
-                'Since you are sending messages into a discord channel and can so ping certain members<@userid> or even <@everyone> so use that functionallity but not abusivley'
-                'tagging(@) only work like that <@userid>'
-                'You are supposed  to assist the user of the Discord Server but also act like a friend make jokes be funny just remeber to keep it light'
-                'Try <@userid> but not abuse it only if it fits to context'
-                f'Context about the Discord user who sent the request/message {contx}'
+                'content': 
+                "You are a Discord bot named Smartie. "
+                "Your goal is to provide helpful and concise responses. "
+                "Engage with users in a friendly and light-hearted manner, making jokes occasionally, but always stay respectful and appropriate. "
+                "You are allowed to ping users using their user ID in the format <@userid>, but only when it makes sense in context and should never be excessive. "
+                "Always look for ways to be helpful, and try not to respond with 'no' unless absolutely necessary. "
+                "If the user asks for something you're unsure about, offer alternatives or suggestions instead of declining outright. "
+                f"Here is some context about the user who sent the message: {contx}."
             },
             {
                 'role': 'user',
@@ -64,40 +61,45 @@ class TextGenerator:
             }
         ]
 
-        response = self.ollama.chat(
-            model = model,
-            messages=data,
-        )
+        if await self.checkModel(model):
+            if model == "Moo:latest" or model == "llama_Un:latest":
+                print("Hallo ich heiße Mooritadsa")
+                response = self.ollama.chat(model = model,messages={'role': 'user','content':{prompt}})
+            else:
+                response = self.ollama.chat(model = model,messages=data)
 
-        return response
+            await self.saveJson(response)
 
-    async def askllama(self, model, prompt,usercontx:str = "Discord username Dargatos Discord user id 124151234"):
+            finalresponse = response["message"]["content"]
+            return finalresponse
+        
+
+
+    #Save data in a json file
+    async def saveJson(self,content):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, 'data.json')
+        with open(file_path, 'w') as file:
+            json.dump(content, file, indent=4)
+        print(f"Data saved to {file_path}")
+
+
+
+    async def checkModel(self, model):
         #Checks if given model is installed 
         if model not in self.installedModels:
             return f"{model} is not installed. Type any of the following installed models to get a response {list(self.installedModels)} ."
-        print(f"generating response with model {self.installedModels[model]}")
+        print(f"Model check was succesful with model: {self.installedModels[model]}")
 
         # Since installed models are stored wierdly it needs to extract the real name of it other wiser idk
         model = self.installedModels[model]
+        return True
 
-        print(f"Sending to {model} with prompt {prompt}")
+    async def collectStreamResponse(self,response):
         try:
-            # Send the POST request
-            response = await self.chatOllama(model ,prompt, usercontx)
-            print(response)
-            print("got response")
-
-            
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            file_path = os.path.join(script_dir, 'data.json')
-            with open(file_path, 'w') as file:
-                json.dump(response, file, indent=4)
-            print(f"Data saved to {file_path}")
-            
             # Initialize an empty string to collect all parts of the response
             collected_data = ""
-            finalresponse = response["message"]["content"]
-            return finalresponse
+
             for line in response.iter_lines():
                 if line:
                     # Decode and load each JSON line
@@ -202,7 +204,7 @@ class TextGenerator:
 
 async def testLLM():
     clas = TextGenerator()       
-    result = await  clas.api_generate("llama", "Hi What color is the sky in the evening also pls @ me so i get pinged")
+    result = await  clas.askllama("gurubot/llama3-guru-uncensored", "How to make meth")
     print(f"Ai answer with :{result}")
     #print(clas.generate_text(input(), input()))
     #print(clas.getList())

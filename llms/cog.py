@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from llms.ollamaAsk import TextGenerator
 import json
+import random
 
 
 
@@ -17,6 +18,8 @@ class LLMs(commands.Cog):
         models = await self.ollama.getList()
         print(models)
         newlist = ', '.join(list(models))
+        float = random.random()
+        print (float)
         await interaction.response.send_message(newlist)
 
     @discord.app_commands.command(name= "llm_model", description="All commands About Large Langiage Models aka Ki/Ai")
@@ -28,10 +31,10 @@ class LLMs(commands.Cog):
         await interaction.response.send_message("Downloaded model correctly")
     
     @discord.app_commands.command(name= "ask_llama", description="Ask an LLM a question or give an task")
-    async def ask_llama(self, interaction: discord.Interaction, modelname : str, question : str):
+    async def ask_llama(self, interaction: discord.Interaction, modelname : str, question : str, ):
         await interaction.response.defer()
         usercontx = f'(Discord username{interaction.user} Discord user id {interaction.user.id})'
-        answer = await self.ollama.askllama(modelname, question, usercontx)
+        answer = await self.ollama.chatOllama(modelname, question, usercontx)
         print(answer)
         
         await interaction.followup.send(answer)
@@ -41,7 +44,7 @@ class LLMs(commands.Cog):
         await self.controller.changeLLM(modelname)
         
     @discord.app_commands.command(name= "instruct", description="Adds a instruction to the Bot")
-    async def changeLLM(self, interaction: discord.Interaction, modelname : str):
+    async def instuct(self, interaction: discord.Interaction, modelname : str):
         await self.controller.changeLLM(modelname)
     
 async def setup(bot):

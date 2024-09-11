@@ -2,7 +2,7 @@ import discord
 from pathlib import Path
 import aiohttp
 from llms.ollamaAsk import TextGenerator
-
+import random
 class LLMs:
     def __init__(self, bot):
         self.Ollama = TextGenerator()
@@ -36,16 +36,18 @@ class LLMs:
                     print (f'Now Using {self.currenLLM} as LLM')
             else:
                 usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
-                response = await self.Ollama.askllama(self.currenLLM, message.content,usercontx)
+                response = await self.Ollama.chatOllama(self.currenLLM, message.content,usercontx)
                 await message.channel.send(response)
                 
             return
 
         if message.author.name == "zero_panda":
-            await message.reply("Maul Lura")
+            if random.random() < 0.1:
+                await message.reply("Maul Lura")
 
         elif message.author.name == "rawaschuba":
-            await message.reply("Rawa du süßer <3 U")
+            if random.random() < 0.1:
+                await message.reply("Rawa du süßer <3 U")
 
 
         if message.content == "Moin":
@@ -65,7 +67,7 @@ class LLMs:
 
         if "Smartie" in message.content:
             usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
-            text = await self.Ollama.askllama(self.currenLLM,message.content,usercontx)
+            text = await self.Ollama.chatOllama(self.currenLLM,message.content,usercontx)
             await message.reply(text)
 
 
@@ -152,7 +154,7 @@ class LLMs:
     async def OllamaCheck(self, message):
         model = await self.ollamalistCheck(message)
         if model:
-            text = await self.Ollama.askllama(model,message.content)
+            text = await self.Ollama.chatOllama(model,message.content)
             await message.reply(text)
 
     async def ollamalistCheck(self, message):

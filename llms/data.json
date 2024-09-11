@@ -1,16 +1,16 @@
 {
-    "model": "llama:latest",
-    "created_at": "2024-09-10T16:27:04.5456972Z",
+    "model": "llama",
+    "created_at": "2024-09-11T17:58:19.8509659Z",
     "message": {
         "role": "assistant",
-        "content": "It's all good on my end! Just sipping virtual coffee and waiting for someone to ask me a question. So, how about you? Had any exciting moments or just enjoying the quiet life?"
+        "content": "Hey <@671016226620833792>! What's good? Need help with something or just saying hi?"
     },
     "done_reason": "stop",
     "done": true,
-    "total_duration": 7607109800,
-    "load_duration": 19141400,
-    "prompt_eval_count": 187,
-    "prompt_eval_duration": 2176239000,
-    "eval_count": 41,
-    "eval_duration": 5410832000
+    "total_duration": 4341948500,
+    "load_duration": 20993200,
+    "prompt_eval_count": 162,
+    "prompt_eval_duration": 409007000,
+    "eval_count": 25,
+    "eval_duration": 3909804000
 }

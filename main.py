@@ -28,7 +28,6 @@ def run():
     async def on_message(message: discord.Message):
         await bot.controller_llm.process_message(message)
 
-        await bot.process_commands(message)
 
 
 

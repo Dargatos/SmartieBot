@@ -8,7 +8,7 @@ class LLMs:
         self.Ollama = TextGenerator()
         self.bot = bot
         self.webhooks = {}
-        self.standardLLM : str = "llama"
+        self.standardLLM : str = "llama:latest"
         self.currenLLM : str = self.standardLLM
 
     async def changeLLM(self, newllm):
@@ -18,7 +18,8 @@ class LLMs:
             print(f"Change LLM to {newllm}")
 
     async def process_message(self, message: discord.Message):
-
+        if message.author == self.bot.user:
+                return
 
         if isinstance(message.channel, discord.DMChannel):
             if message.author == self.bot.user:
@@ -63,16 +64,34 @@ class LLMs:
             target_channel_id = message.channel.id
             await self.send_message_with_webhook(message,target_channel_id, "Ich bin ein Pinguin Quack Quack", "Moritz", avatar_url)
 
-        
+        if "Moo" in message.content:
+            usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
+            text = await self.Ollama.chatOllama("Moo",message.content,usercontx)
+            await message.reply(text)
 
         if "Smartie" in message.content:
             usercontx = f'(Discord username{message.author} Discord user id {message.author.id})'
             text = await self.Ollama.chatOllama(self.currenLLM,message.content,usercontx)
-            await message.reply(text)
+            print(text)
+            if text == None: 
+                await message.reply("Idk sth bad happend f that shit")
+            elif len(text) > 2000:
+                await self.send_long_message(message, text)
+            else: 
+                await message.reply(text)
 
 
         #await self.OllamaCheck(message)
 
+    async def send_long_message(self, message, text):
+        # Break the text into 2000 character chunks
+        chunk_size = 2000
+        chunks = [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+        
+        # Send each chunk
+        for chunk in chunks:
+            await message.channel.send(chunk)
+            
     async def fetch_user_avatar(self, user_id):
         try:
             user = await self.bot.fetch_user(user_id)
